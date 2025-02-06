@@ -1,145 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:orientation="vertical"
+    tools:context=".Fragment.TaiNgheSiFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
+        android:layout_height="match_parent"
         android:background="@drawable/anhnen"
-        tools:context=".Fragment.TaiNhacFragment">
-
+        android:orientation="vertical">
         <TextView
-            android:id="@+id/textView7"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            android:text="Tải nhạc"
+            android:text="Tải thông tin nghệ sĩ"
             android:textColor="#FFFFFF"
-            android:textSize="50sp"
-            android:textStyle="bold" />
+            android:textSize="25sp"
+            android:textStyle="bold">
 
-        <TextView
-            android:id="@+id/textView9"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="RandomID để đặt id cho ảnh, nhạc và id song"
-            android:textColor="#FFFFFF" />
-
+        </TextView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/imgTn_Avatar"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
+                android:layout_gravity="center"
                 android:src="@drawable/vpop" />
 
             <Button
-                android:id="@+id/btnTn_RandomId"
+                android:id="@+id/btnTns_RandomId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Random ID" />
 
             <TextView
-                android:id="@+id/txtTn_HienId"
+                android:id="@+id/txtTns_RandomId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#FFFFFF" />
+                android:layout_weight="1"
+                android:text="" />
         </LinearLayout>
 
         <EditText
-            android:id="@+id/edtTn_TenBaiHat"
-            android:layout_width="match_parent"
+            android:id="@+id/edtTns_TenNgheSi"
+            android:layout_width="368dp"
             android:layout_height="62dp"
+            android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:background="@drawable/botron_edittext"
-            android:hint="Tên bài hát"
-            android:inputType="text"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp" />
-
-        <EditText
-            android:id="@+id/edtTn_TheLoai"
-            android:layout_width="match_parent"
-            android:layout_height="62dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/botron_edittext"
-            android:hint="Thể loại"
+            android:ems="10"
+            android:hint="Tên nghệ sĩ"
             android:inputType="text"
             android:paddingStart="20dp"
             android:paddingEnd="20dp" />
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="368dp"
             android:layout_height="62dp"
-            android:layout_marginTop="15dp"
-            android:gravity="center"
             android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginTop="15dp"
             android:background="@drawable/botron_edittext"
             android:orientation="horizontal">
 
             <ImageView
-                android:id="@+id/imgTn_Lich"
+                android:id="@+id/imgTns_Lich"
                 android:layout_width="wrap_content"
                 android:layout_height="28dp"
+                android:layout_gravity="center"
                 android:layout_marginLeft="20dp"
                 android:scaleType="matrix"
                 android:src="@drawable/lich" />
 
             <TextView
-                android:id="@+id/txtTn_Lich"
+                android:id="@+id/txtTns_Lich"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginRight="20dp"
                 android:layout_weight="1"
                 android:hint="dd/mm/yyyy"
                 android:textSize="18sp" />
         </LinearLayout>
 
+        <EditText
+            android:id="@+id/edtTns_QueQuan"
+            android:layout_width="368dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/botron_edittext"
+            android:ems="10"
+            android:hint="Quê quán"
+            android:inputType="text"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp" />
+
+        <EditText
+            android:id="@+id/edtTns_NgheDanh"
+            android:layout_width="368dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/botron_edittext"
+            android:ems="10"
+            android:hint="Nghệ danh"
+            android:inputType="text"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp" />
+
+        <EditText
+            android:id="@+id/edtTns_ThongTin"
+            android:layout_width="368dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/botron_edittext"
+            android:ems="10"
+            android:hint="Thông tin"
+            android:inputType="text"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp" />
+
+        <EditText
+            android:id="@+id/edtTns_DsBaiHat"
+            android:layout_width="368dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/botron_edittext"
+            android:ems="10"
+            android:hint="Nhập danh sách bài hát"
+            android:inputType="text"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp" />
+
         <TextView
             android:id="@+id/txtTn_LinkAnh"
-            android:layout_width="match_parent"
+            android:layout_width="368dp"
             android:layout_height="62dp"
+            android:layout_gravity="center"
             android:layout_marginTop="20dp"
             android:background="@drawable/botron_edittext"
             android:paddingTop="20dp"
             android:hint="Link ảnh"
             android:paddingStart="25dp"
-            android:paddingEnd="20dp" />
-
-        <EditText
-            android:id="@+id/edtTn_Time"
-            android:layout_width="match_parent"
-            android:layout_height="62dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/botron_edittext"
-            android:drawableStart="@drawable/time"
-            android:drawablePadding="10dp"
-            android:hint="Time"
-            android:inputType="number"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp" />
-
-        <TextView
-            android:id="@+id/txtTn_LinkNhac"
-            android:layout_width="match_parent"
-            android:layout_height="62dp"
-            android:layout_marginTop="20dp"
-            android:background="@drawable/botron_edittext"
-            android:paddingTop="20dp"
-            android:hint="Link nhạc"
-            android:paddingStart="25dp"
-            android:paddingEnd="20dp" />
+            android:paddingEnd="20dp"></TextView>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -148,30 +162,22 @@
             android:gravity="center">
 
             <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnTn_TaiAnh"
+                android:id="@+id/btnTns_TaiDuLieu"
                 android:layout_width="120dp"
                 android:layout_height="60dp"
-                android:background="@drawable/hieu_ung_gon_song_button"
-                android:text="Tải ảnh"
-                android:textSize="25sp" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnTn_TaiNhac"
-                android:layout_width="120dp"
-                android:layout_height="60dp"
-                android:background="@drawable/hieu_ung_gon_song_button"
-                android:text="Tải nhạc"
-                android:textSize="25sp" />
-
-            <androidx.appcompat.widget.AppCompatButton
-                android:id="@+id/btnTn_TaiDuLieu"
-                android:layout_width="120dp"
-                android:layout_height="60dp"
+                android:layout_gravity="center"
                 android:background="@drawable/hieu_ung_gon_song_button"
                 android:text="Tải dữ liệu"
-                android:textSize="25sp" />
+                android:textSize="25sp"></androidx.appcompat.widget.AppCompatButton>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnTns_TaiAnh"
+                android:layout_width="120dp"
+                android:layout_height="60dp"
+                android:layout_gravity="center"
+                android:background="@drawable/hieu_ung_gon_song_button"
+                android:text="Tải ảnh"
+                android:textSize="25sp"></androidx.appcompat.widget.AppCompatButton>
         </LinearLayout>
-
     </LinearLayout>
-
 </ScrollView>

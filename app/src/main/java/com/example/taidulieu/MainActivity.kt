@@ -12,10 +12,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.appmusic.FireBase.Cloudinary
 import com.example.appmusic.Models.Song
+import com.example.taidulieu.Fragment.LuaChonFragment
+import com.example.taidulieu.Fragment.TaiAlbumFragment
+import com.example.taidulieu.Fragment.TaiNgheSiFragment
 import com.example.taidulieu.Fragment.TaiNhacFragment
 
-class MainActivity : BaseActivity(), TaiNhacFragment.OnSongPass {
-    lateinit var songtruyen:Song
+class MainActivity : BaseActivity(), TaiNhacFragment.OnIDPass, TaiNgheSiFragment.OnIDPass,
+    TaiAlbumFragment.OnIDPass {
+    lateinit var idTruyen: String
     val cloudinary = Cloudinary()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,32 +27,34 @@ class MainActivity : BaseActivity(), TaiNhacFragment.OnSongPass {
         setContentView(R.layout.activity_main)
         cloudinary.init(this)
         supportFragmentManager.beginTransaction().apply {
-            replace(R.id.frameLayout,TaiNhacFragment())
+            replace(R.id.frameLayout, LuaChonFragment())
             commit()
         }
     }
+
     // Nhận dữ liệu từ Fragment qua Interface
-    override fun onSongPass(song: Song) {
+    override fun onIDPass(id: String) {
         // Xử lý dữ liệu nhận được
-        songtruyen = song
+        idTruyen = id
     }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            val song: Song = songtruyen
+            val ID: String = idTruyen
             // Kiểm tra data có không null
             val fileUri = Uri.parse(data?.data.toString())
             if (fileUri != null) {
                 // Tiến hành upload file lên
                 if (requestCode == 1) {
                     // Nếu chọn ảnh
-                    val anh =  findViewById<TextView>(R.id.txtTn_LinkAnh)
+                    val anh = findViewById<TextView>(R.id.txtTn_LinkAnh)
                     findViewById<ImageView>(R.id.imgTn_Avatar).setImageURI(fileUri)
-                    cloudinary.uploadFileToCloudinary(fileUri, this, song.SongID+"anh",anh)
+                    cloudinary.uploadFileToCloudinary(fileUri, this, ID + "anh", anh)
                 } else if (requestCode == 2) {
                     // Nếu chọn nhạc
                     val nhac = findViewById<TextView>(R.id.txtTn_LinkNhac)
-                    cloudinary.uploadFileToCloudinary(fileUri, this, song.SongID+"nhac",nhac)
+                    cloudinary.uploadFileToCloudinary(fileUri, this, ID + "nhac", nhac)
                 }
             } else {
                 showToast(this, "FileUri bị null", true)

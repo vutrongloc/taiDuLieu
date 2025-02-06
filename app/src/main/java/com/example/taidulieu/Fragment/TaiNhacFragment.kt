@@ -31,14 +31,14 @@ class TaiNhacFragment : Fragment() {
     lateinit var SongID: String
 
     // Interface để giao tiếp với Activity
-    interface OnSongPass {
-        fun onSongPass(song: Song)
+    interface OnIDPass {
+        fun onIDPass(id: String)
     }
 
-    private var songPasser: OnSongPass? = null
+    private var songPasser: OnIDPass? = null
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        if (context is OnSongPass) {
+        if (context is OnIDPass) {
             songPasser = context
         } else {
             throw RuntimeException("$context phải triển khai OnUserPass")
@@ -46,9 +46,9 @@ class TaiNhacFragment : Fragment() {
     }
 
     // Phương thức truyền dữ liệu qua Interface
-    fun passSongToActivity() {
-        val song: Song = taoThongTinSong(SongID)
-        songPasser?.onSongPass(song)
+    fun passIDToActivity() {
+        val ID: String = SongID
+        songPasser?.onIDPass(ID)
     }
 
     override fun onDetach() {
@@ -163,12 +163,12 @@ class TaiNhacFragment : Fragment() {
 //                checkTaiTrungNhac(song.TenBaiHat)
 //                    .addOnSuccessListener { isAvailable ->
 //                        if (isAvailable) {
-                            FirestoreClass().taiDuLieuLenFirestore(
-                                Constants.SONG,
-                                song.SongID,
-                                song,
-                                requireActivity()
-                            )
+                FirestoreClass().taiDuLieuLenFirestore(
+                    Constants.SONG,
+                    song.SongID,
+                    song,
+                    requireActivity()
+                )
 //                        }
 //                    }
             }
@@ -200,7 +200,7 @@ class TaiNhacFragment : Fragment() {
                 )
                 == PackageManager.PERMISSION_GRANTED
             ) {
-                passSongToActivity()
+                passIDToActivity()
                 chonNhac()
             } else {
                 ActivityCompat.requestPermissions(
@@ -216,7 +216,7 @@ class TaiNhacFragment : Fragment() {
                 )
                 == PackageManager.PERMISSION_GRANTED
             ) {
-                passSongToActivity()
+                passIDToActivity()
                 chonAnh()
             } else {
                 ActivityCompat.requestPermissions(
