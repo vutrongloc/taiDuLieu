@@ -16,6 +16,7 @@ import com.example.taidulieu.Fragment.LuaChonFragment
 import com.example.taidulieu.Fragment.TaiAlbumFragment
 import com.example.taidulieu.Fragment.TaiNgheSiFragment
 import com.example.taidulieu.Fragment.TaiNhacFragment
+import com.example.taidulieu.Fragment.ThuTaiFragment
 
 class MainActivity : BaseActivity(), TaiNhacFragment.OnIDPass, TaiNgheSiFragment.OnIDPass,
     TaiAlbumFragment.OnIDPass {
@@ -27,7 +28,7 @@ class MainActivity : BaseActivity(), TaiNhacFragment.OnIDPass, TaiNgheSiFragment
         setContentView(R.layout.activity_main)
         cloudinary.init(this)
         supportFragmentManager.beginTransaction().apply {
-            replace(R.id.frameLayout, LuaChonFragment())
+            replace(R.id.frameLayout, ThuTaiFragment())
             commit()
         }
     }

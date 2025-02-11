@@ -57,4 +57,5 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore")
     implementation ("com.squareup.picasso:picasso:2.8")
     implementation ("com.cloudinary:cloudinary-android:3.0.2")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
 }
