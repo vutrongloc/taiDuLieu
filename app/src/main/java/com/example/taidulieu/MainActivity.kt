@@ -28,7 +28,7 @@ class MainActivity : BaseActivity(), TaiNhacFragment.OnIDPass, TaiNgheSiFragment
         setContentView(R.layout.activity_main)
         cloudinary.init(this)
         supportFragmentManager.beginTransaction().apply {
-            replace(R.id.frameLayout, ThuTaiFragment())
+            replace(R.id.frameLayout, LuaChonFragment())
             commit()
         }
     }
