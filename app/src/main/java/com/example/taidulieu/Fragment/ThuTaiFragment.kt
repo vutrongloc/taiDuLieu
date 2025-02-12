@@ -1,6 +1,7 @@
 package com.example.taidulieu.Fragment
 
 import android.content.ContentValues
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -12,7 +13,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.example.appmusic.Models.Constants
 import com.example.taidulieu.databinding.FragmentThuTaiBinding
+import com.google.android.gms.tasks.Task
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,6 +28,8 @@ import java.io.InputStream
 import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 class ThuTaiFragment : Fragment() {
     private lateinit var binding: FragmentThuTaiBinding
@@ -38,33 +45,86 @@ class ThuTaiFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnThuTai.setOnClickListener {
-            val fileUrl = "https://res.cloudinary.com/dmf1oito6/video/upload/v1738561701/illit-%EC%95%84%EC%9D%BC%EB%A6%BF-magnetic-official-mv_aogmxt.mp3"
+            val fileUrl =
+                "https://res.cloudinary.com/dmf1oito6/video/upload/v1737188279/R9LrBIeAqhWnRTEJeYwbnhac.mp3"
             downloadFile(fileUrl)
+        }
+    }
+    fun layThongTinTuMeTaDaTa(localFilePath:String){
+        val retriever = MediaMetadataRetriever()
+        retriever.setDataSource(localFilePath) // Đường dẫn file offline
+
+        val title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE) ?: "Không có tiêu đề"
+        val artist = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ARTIST) ?: "Không rõ nghệ sĩ"
+        //val album = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM) ?: "Không có album"
+        retriever.release()
+        binding.txtNgheSi.setText(artist)
+        binding.txtTieuDe.setText(title)
+    }
+    private fun layTenNhac(linkNhac: String, callback: (String) -> Unit) {
+        var tenFile = "rong"
+        var idNgheSi: MutableList<String> = mutableListOf()
+
+        Firebase.firestore.collection(Constants.SONG).whereEqualTo("linkNhac", linkNhac).get()
+            .addOnSuccessListener { documents ->
+                if (documents.isEmpty) {
+                    callback(tenFile)
+                }
+
+                for (document in documents) {
+                    tenFile = document.getString("tenBaiHat") + "-"
+                    idNgheSi = document.get("ngheSi_ID") as MutableList<String>
+                }
+
+                Firebase.firestore.collection(Constants.NGHESI)
+                    .whereEqualTo("ngheSiID", idNgheSi[0])
+                    .get()
+                    .addOnSuccessListener { artistDocs ->
+                        if (artistDocs.isEmpty) {
+                            callback(tenFile)
+                        }
+                        for (document in artistDocs) {
+                            tenFile += document.getString("tenNgheSi").toString()
+                        }
+                        callback(tenFile)
+                    }
+                    .addOnFailureListener { callback(tenFile) }
+            }
+            .addOnFailureListener { callback(tenFile) }
+    }
+
+    private suspend fun layTenNhacSuspended(linkNhac: String): String {
+        return suspendCoroutine { continuation ->
+            layTenNhac(linkNhac) { tenFile ->
+                continuation.resume(tenFile)
+            }
         }
     }
 
     private fun downloadFile(fileUrl: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            val context = requireContext()
-            val fileName = "my_song.mp3"
-
             try {
+                val context = requireContext()
+                val tenFile = layTenNhacSuspended(fileUrl)
+                val fileName = "$tenFile.mp3"
                 val outputStream: OutputStream?
                 val uri: Uri?
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    // Android 10+ dùng MediaStore
                     val contentResolver = context.contentResolver
                     val contentValues = ContentValues().apply {
                         put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
                         put(MediaStore.MediaColumns.MIME_TYPE, "audio/mpeg")
                         put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
                     }
-                    uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, contentValues)
+                    uri = contentResolver.insert(
+                        MediaStore.Downloads.EXTERNAL_CONTENT_URI,
+                        contentValues
+                    )
                     outputStream = uri?.let { contentResolver.openOutputStream(it) }
                 } else {
-                    // Android 9 trở xuống: Lưu vào thư mục /storage/emulated/0/Download/
-                    val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val downloadDir =
+                        Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
                     val file = File(downloadDir, fileName)
                     outputStream = FileOutputStream(file)
                     uri = Uri.fromFile(file)
@@ -77,7 +137,6 @@ class ThuTaiFragment : Fragment() {
                     return@launch
                 }
 
-                // Kết nối tải file
                 val url = URL(fileUrl)
                 val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
                 connection.requestMethod = "GET"
@@ -85,17 +144,23 @@ class ThuTaiFragment : Fragment() {
                 connection.connect()
 
                 val inputStream: InputStream = connection.inputStream
-                inputStream.copyTo(outputStream)
+                outputStream.use { out -> inputStream.use { inp -> inp.copyTo(out) } }
 
-                outputStream.close()
-                inputStream.close()
-
+                // Lấy đường dẫn file offline
+                val filePath = uri?.path ?: "Không lấy được đường dẫn"
+                //Log.d("DownloadPath", "File offline lưu tại: $filePath")
+                layThongTinTuMeTaDaTa(filePath)
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Tải xuống thành công vào thư mục Download", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Tải xuống thành công: $filePath", Toast.LENGTH_LONG)
+                        .show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Lỗi khi tải file: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        "Lỗi khi tải file: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
