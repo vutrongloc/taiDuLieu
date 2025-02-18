@@ -21,6 +21,7 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -46,7 +47,7 @@ class ThuTaiFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         binding.btnThuTai.setOnClickListener {
             val fileUrl =
-                "https://res.cloudinary.com/dmf1oito6/video/upload/v1737188279/R9LrBIeAqhWnRTEJeYwbnhac.mp3"
+                "https://res.cloudinary.com/dmf1oito6/video/upload/v1737188798/7Vq8dze0hbae34VDfNdcnhac.mp3"
             downloadFile(fileUrl)
         }
     }
@@ -61,51 +62,28 @@ class ThuTaiFragment : Fragment() {
         binding.txtNgheSi.setText(artist)
         binding.txtTieuDe.setText(title)
     }
-    private fun layTenNhac(linkNhac: String, callback: (String) -> Unit) {
+    private suspend fun layTenNhac(linkNhac: String):String {
         var tenFile = "rong"
         var idNgheSi: MutableList<String> = mutableListOf()
-
-        Firebase.firestore.collection(Constants.SONG).whereEqualTo("linkNhac", linkNhac).get()
-            .addOnSuccessListener { documents ->
-                if (documents.isEmpty) {
-                    callback(tenFile)
-                }
-
-                for (document in documents) {
-                    tenFile = document.getString("tenBaiHat") + "-"
-                    idNgheSi = document.get("ngheSi_ID") as MutableList<String>
-                }
-
-                Firebase.firestore.collection(Constants.NGHESI)
-                    .whereEqualTo("ngheSiID", idNgheSi[0])
-                    .get()
-                    .addOnSuccessListener { artistDocs ->
-                        if (artistDocs.isEmpty) {
-                            callback(tenFile)
-                        }
-                        for (document in artistDocs) {
-                            tenFile += document.getString("tenNgheSi").toString()
-                        }
-                        callback(tenFile)
-                    }
-                    .addOnFailureListener { callback(tenFile) }
-            }
-            .addOnFailureListener { callback(tenFile) }
-    }
-
-    private suspend fun layTenNhacSuspended(linkNhac: String): String {
-        return suspendCoroutine { continuation ->
-            layTenNhac(linkNhac) { tenFile ->
-                continuation.resume(tenFile)
-            }
+        val song = Firebase.firestore.collection(Constants.SONG).whereEqualTo("linkNhac", linkNhac).get().await()
+        for (document in song) {
+            tenFile = document.getString("tenBaiHat") + "-"
+            idNgheSi = document.get("ngheSi_ID") as MutableList<String>
         }
-    }
 
+        var ngheSi = Firebase.firestore.collection(Constants.NGHESI)
+            .whereEqualTo("ngheSiID", idNgheSi[0])
+            .get().await()
+        for (document in ngheSi) {
+            tenFile += document.getString("tenNgheSi").toString()
+        }
+        return tenFile
+    }
     private fun downloadFile(fileUrl: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val context = requireContext()
-                val tenFile = layTenNhacSuspended(fileUrl)
+                val tenFile = layTenNhac(fileUrl)
                 val fileName = "$tenFile.mp3"
                 val outputStream: OutputStream?
                 val uri: Uri?
